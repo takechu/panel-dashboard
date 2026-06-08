@@ -33,6 +33,16 @@ function applyZoom(tile, tileEl) {
   iframe.style.transform       = `scale(${zoom})`;
   iframe.style.transformOrigin = 'top left';
   if (label) label.textContent = formatZoom(zoom);
+  flashZoomIndicator(tileEl, formatZoom(zoom));
+}
+
+function flashZoomIndicator(tileEl, text) {
+  const indicator = tileEl.querySelector('.tile-zoom-indicator');
+  if (!indicator) return;
+  indicator.textContent = text;
+  indicator.classList.remove('visible');
+  indicator.offsetWidth; // reflow to restart animation
+  indicator.classList.add('visible');
 }
 
 function stepZoom(tile, tileEl, direction) {
@@ -204,13 +214,12 @@ function createTileElement(tile) {
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation-by-user-activation">
       </iframe>
     </div>
-    <div class="tile-statusbar">
-      <div class="tile-zoom-controls">
-        <button class="tile-zoom-btn tile-zoom-out-btn" title="縮小 (25%〜200%)">−</button>
-        <span class="tile-zoom-label">${formatZoom(tile.zoom)}</span>
-        <button class="tile-zoom-btn tile-zoom-in-btn" title="拡大 (25%〜200%)">＋</button>
-      </div>
+    <div class="tile-controls-overlay">
+      <button class="tile-zoom-btn tile-zoom-out-btn" title="縮小">−</button>
+      <span class="tile-zoom-label">${formatZoom(tile.zoom)}</span>
+      <button class="tile-zoom-btn tile-zoom-in-btn" title="拡大">＋</button>
     </div>
+    <div class="tile-zoom-indicator"></div>
     <div class="resize-handle resize-n"></div>
     <div class="resize-handle resize-e"></div>
     <div class="resize-handle resize-s"></div>
@@ -238,6 +247,7 @@ function createTileElement(tile) {
     iframe.src = '';
     requestAnimationFrame(() => { iframe.src = src; });
   });
+
   el.querySelector('.tile-zoom-out-btn').addEventListener('click', () => stepZoom(tile, el, -1));
   el.querySelector('.tile-zoom-in-btn').addEventListener('click',  () => stepZoom(tile, el, +1));
 
@@ -611,6 +621,27 @@ goToOptions.addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && isDashboardMode) exitDashboardMode();
   if (e.key === 'F11') { e.preventDefault(); toggleMode(); }
+  if (e.key === 'Control') document.body.classList.add('ctrl-zoom');
+});
+document.addEventListener('keyup', e => {
+  if (e.key === 'Control') document.body.classList.remove('ctrl-zoom');
+});
+window.addEventListener('blur', () => document.body.classList.remove('ctrl-zoom'));
+
+// Prevent browser page zoom on Ctrl+scroll (must be non-passive)
+window.addEventListener('wheel', e => {
+  if (e.ctrlKey) e.preventDefault();
+}, { passive: false });
+
+// Per-tile Ctrl+scroll zoom
+canvas.addEventListener('wheel', e => {
+  if (!e.ctrlKey) return;
+  const tileEl = e.target.closest('.tile');
+  if (!tileEl) return;
+  const tileId = tileEl.id.replace('tile-', '');
+  const tile = activeDashboard && activeDashboard.tiles.find(t => t.id === tileId);
+  if (!tile) return;
+  stepZoom(tile, tileEl, e.deltaY < 0 ? +1 : -1);
 });
 
 // Messages from background (e.g. add current tab from popup)

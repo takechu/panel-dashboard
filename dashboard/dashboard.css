@@ -118,6 +118,11 @@ body.interacting .tile-body {
   pointer-events: none;
 }
 
+/* While Ctrl is held, let wheel events pass through iframes for per-tile zoom */
+body.ctrl-zoom .tile-body iframe {
+  pointer-events: none;
+}
+
 /* ==================== Grid Overlay ==================== */
 
 #grid-overlay {
@@ -246,53 +251,90 @@ body.dashboard-mode .tile-header {
   color: #f88;
 }
 
-/* ==================== Tile Status Bar ==================== */
+/* ==================== Tile Zoom Indicator ==================== */
 
-.tile-statusbar {
-  height: 22px;
-  background: #0d1628;
-  border-top: 1px solid #1e2a40;
+.tile-zoom-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 10px;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0;
+  white-space: nowrap;
+}
+
+.tile-zoom-indicator.visible {
+  animation: zoomIndicatorFade 0.9s ease forwards;
+}
+
+@keyframes zoomIndicatorFade {
+  0%   { opacity: 1; }
+  55%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ==================== Tile Hover Controls Overlay ==================== */
+
+.tile-controls-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: rgba(8, 16, 36, 0.85);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 6px;
-  flex-shrink: 0;
+  justify-content: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 15;
+  pointer-events: none;
   user-select: none;
 }
 
-body.dashboard-mode .tile-statusbar {
-  display: none;
+.tile:hover .tile-controls-overlay {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.tile-zoom-controls {
-  display: flex;
-  align-items: center;
-  height: 100%;
+body.dashboard-mode .tile-controls-overlay {
+  display: none;
 }
 
 .tile-zoom-btn {
   border: none;
-  background: none;
-  color: #7090b8;
+  background: rgba(255, 255, 255, 0.08);
+  color: #90b8e0;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  padding: 0 6px;
-  height: 100%;
+  width: 32px;
+  height: 28px;
   line-height: 1;
-  border-radius: 3px;
+  border-radius: 4px;
   transition: background 0.1s, color 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tile-zoom-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #c0d8f0;
+  background: rgba(255, 255, 255, 0.18);
+  color: #d0e8ff;
 }
 
 .tile-zoom-label {
-  font-size: 11px;
-  color: #90aad0;
-  min-width: 36px;
+  font-size: 13px;
+  color: #c0d8f0;
+  min-width: 44px;
   text-align: center;
   user-select: none;
   font-variant-numeric: tabular-nums;
