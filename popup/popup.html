@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 240px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      color: #202124;
+      background: #fff;
+    }
+    h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a73e8;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 14px;
+      padding: 6px 8px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot.open { background: #34a853; }
+    .dot.closed { background: #9aa0a6; }
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 9px 12px;
+      margin-bottom: 6px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: background 0.15s;
+    }
+    #btn-open {
+      background: #1a73e8;
+      color: white;
+      font-weight: 500;
+    }
+    #btn-open:hover { background: #1557b0; }
+    #btn-add-tab {
+      background: #f1f3f4;
+      color: #202124;
+    }
+    #btn-add-tab:hover { background: #e8eaed; }
+    #btn-options {
+      background: #f1f3f4;
+      color: #202124;
+    }
+    #btn-options:hover { background: #e8eaed; }
+    .divider {
+      border: none;
+      border-top: 1px solid #e8eaed;
+      margin: 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="#1a73e8">
+      <rect x="1" y="1" width="6" height="6" rx="1"/>
+      <rect x="9" y="1" width="6" height="6" rx="1"/>
+      <rect x="1" y="9" width="6" height="6" rx="1"/>
+      <rect x="9" y="9" width="6" height="6" rx="1"/>
+    </svg>
+    Panel Dashboard
+  </h1>
+
+  <div class="status">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">確認中...</span>
+  </div>
+
+  <button id="btn-open">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <rect x="0" y="0" width="6" height="6" rx="1"/>
+      <rect x="8" y="0" width="6" height="6" rx="1"/>
+      <rect x="0" y="8" width="6" height="6" rx="1"/>
+      <rect x="8" y="8" width="6" height="6" rx="1"/>
+    </svg>
+    <span id="btn-open-text">ダッシュボードを開く</span>
+  </button>
+
+  <button id="btn-add-tab">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+      <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    現在のタブを追加
+  </button>
+
+  <hr class="divider">
+
+  <button id="btn-options">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
+      <circle cx="7" cy="7" r="2.5"/>
+      <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.5 2.5l1 1M10.5 10.5l1 1M11.5 2.5l-1 1M3.5 10.5l-1 1"/>
+    </svg>
+    設定
+  </button>
+
+  <script src="popup.js"></script>
+</body>
+</html>

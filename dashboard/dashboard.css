@@ -1,0 +1,667 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #0f0f1a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ==================== Control Bar ==================== */
+
+#control-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  background: #16213e;
+  border-bottom: 1px solid #2a2a4a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  z-index: 1000;
+  user-select: none;
+}
+
+body.dashboard-mode #control-bar {
+  display: none;
+}
+
+.control-left,
+.control-center,
+.control-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-right {
+  margin-left: auto;
+}
+
+#dashboard-select {
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid #2a4a7a;
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  max-width: 160px;
+}
+
+.ctrl-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  background: #1e3a5f;
+  color: #c0c8d8;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.ctrl-btn:hover {
+  background: #2a4f7a;
+  color: #fff;
+}
+
+.ctrl-btn-primary {
+  background: #1a73e8;
+  color: #fff;
+}
+
+.ctrl-btn-primary:hover {
+  background: #1557b0;
+}
+
+.ctrl-btn-mode {
+  background: #0f3460;
+  color: #a0c0ff;
+  font-weight: 500;
+}
+
+.ctrl-btn-mode:hover {
+  background: #1a4a80;
+}
+
+.ctrl-btn-danger:hover {
+  background: #7a1e1e;
+  color: #ffaaaa;
+}
+
+/* ==================== Canvas ==================== */
+
+#canvas {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+body.dashboard-mode #canvas {
+  top: 0;
+}
+
+/* During drag/resize, prevent iframe from stealing mouse events */
+body.interacting .tile-body {
+  pointer-events: none;
+}
+
+/* ==================== Grid Overlay ==================== */
+
+#grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  display: none;
+  background-image:
+    linear-gradient(to right,  rgba(100, 140, 220, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(100, 140, 220, 0.15) 1px, transparent 1px);
+  background-size: 5% 5%;
+}
+
+body.interacting #grid-overlay {
+  display: block;
+}
+
+/* ==================== Empty State ==================== */
+
+#empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #555;
+}
+
+.empty-icon {
+  margin-bottom: 16px;
+}
+
+#empty-state h2 {
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  color: #667;
+}
+
+#empty-state p {
+  font-size: 13px;
+  color: #445;
+}
+
+/* ==================== Tile ==================== */
+
+.tile {
+  position: absolute;
+  border: 1px solid #2a2a4a;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  min-width: 80px;
+  min-height: 60px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.tile:hover {
+  border-color: #3a4a7a;
+}
+
+body.dashboard-mode .tile {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Tile Header */
+.tile-header {
+  height: 30px;
+  background: #16213e;
+  border-bottom: 1px solid #2a2a4a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+body.dashboard-mode .tile-header {
+  display: none;
+}
+
+.tile-drag-handle {
+  color: #445;
+  font-size: 14px;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.tile-title {
+  flex: 1;
+  min-width: 0; /* flex item がテキスト幅以下に縮めるよう明示 */
+  color: #8a9cc0;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tile-header-btn {
+  border: none;
+  background: none;
+  color: #556;
+  cursor: pointer;
+  padding: 3px 5px;
+  font-size: 12px;
+  border-radius: 3px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 0.1s, color 0.1s;
+}
+
+.tile-header-btn:hover {
+  background: #2a3a5a;
+  color: #aac;
+}
+
+.tile-close-btn:hover {
+  background: #5a2020;
+  color: #f88;
+}
+
+/* ==================== Tile Status Bar ==================== */
+
+.tile-statusbar {
+  height: 22px;
+  background: #0d1628;
+  border-top: 1px solid #1e2a40;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 6px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+body.dashboard-mode .tile-statusbar {
+  display: none;
+}
+
+.tile-zoom-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.tile-zoom-btn {
+  border: none;
+  background: none;
+  color: #7090b8;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 0 6px;
+  height: 100%;
+  line-height: 1;
+  border-radius: 3px;
+  transition: background 0.1s, color 0.1s;
+}
+
+.tile-zoom-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #c0d8f0;
+}
+
+.tile-zoom-label {
+  font-size: 11px;
+  color: #90aad0;
+  min-width: 36px;
+  text-align: center;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Tile Content */
+.tile-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.tile-body iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+  background: #fff;
+}
+
+/* ==================== Resize Handles ==================== */
+
+.resize-handle {
+  position: absolute;
+  z-index: 10;
+}
+
+body.dashboard-mode .resize-handle {
+  display: none;
+}
+
+.resize-n  { top: 0; left: 8px; right: 8px; height: 5px; cursor: n-resize; }
+.resize-s  { bottom: 0; left: 8px; right: 8px; height: 5px; cursor: s-resize; }
+.resize-e  { right: 0; top: 8px; bottom: 8px; width: 5px; cursor: e-resize; }
+.resize-w  { left: 0; top: 8px; bottom: 8px; width: 5px; cursor: w-resize; }
+.resize-ne { right: 0; top: 0; width: 12px; height: 12px; cursor: ne-resize; }
+.resize-nw { left: 0; top: 0; width: 12px; height: 12px; cursor: nw-resize; }
+.resize-se { right: 0; bottom: 0; width: 12px; height: 12px; cursor: se-resize; }
+.resize-sw { left: 0; bottom: 0; width: 12px; height: 12px; cursor: sw-resize; }
+
+/* ==================== Dashboard Mode Shortcut Hint ==================== */
+
+#shortcut-hint {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  z-index: 2000;
+  pointer-events: none;
+  animation: fadeOut 3s ease forwards;
+  animation-delay: 1s;
+}
+
+body.dashboard-mode #shortcut-hint {
+  display: block;
+}
+
+@keyframes fadeOut {
+  0%   { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ==================== Modals ==================== */
+
+#modal-overlay,
+#library-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  backdrop-filter: blur(2px);
+}
+
+#modal-overlay.hidden,
+#library-overlay.hidden {
+  display: none;
+}
+
+#modal {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 10px;
+  padding: 24px;
+  width: 500px;
+  max-width: 92vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  color: #c0c8d8;
+}
+
+#modal h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #e0e8f8;
+}
+
+#modal label {
+  display: block;
+  font-size: 11px;
+  color: #667;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#modal input {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  background: #0f0f1a;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  color: #c0c8d8;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+#modal input:focus {
+  border-color: #1a73e8;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.modal-buttons button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.modal-buttons button:first-child {
+  background: #2a2a4a;
+  color: #8090b0;
+}
+
+.modal-buttons button:first-child:hover {
+  background: #333355;
+}
+
+.btn-primary {
+  background: #1a73e8;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1557b0;
+}
+
+/* ==================== Tab Picker ==================== */
+
+.tab-picker-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 8px;
+  font-size: 10px;
+  color: #445;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.tab-picker-divider::before,
+.tab-picker-divider::after {
+  content: '';
+  flex: 1;
+  border-top: 1px solid #2a2a4a;
+}
+
+#tab-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-bottom: 14px;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  background: #0f0f1a;
+}
+
+#tab-list:empty::after {
+  content: 'タブを読み込み中...';
+  display: block;
+  padding: 16px;
+  text-align: center;
+  color: #445;
+  font-size: 12px;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #1e1e30;
+  transition: background 0.1s;
+}
+
+.tab-item:last-child {
+  border-bottom: none;
+}
+
+.tab-item:hover {
+  background: #1e2e4e;
+}
+
+.tab-item.selected {
+  background: #1a3a60;
+}
+
+.tab-favicon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.tab-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-item-title {
+  font-size: 12px;
+  color: #c0c8d8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-item-url {
+  font-size: 11px;
+  color: #445;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+.tab-list-empty {
+  padding: 20px;
+  text-align: center;
+  color: #445;
+  font-size: 12px;
+}
+
+/* Library Modal */
+#library-modal {
+  background: #1a1a2e;
+  border: 1px solid #2a2a4a;
+  border-radius: 10px;
+  width: 480px;
+  max-width: 90vw;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  color: #c0c8d8;
+  overflow: hidden;
+}
+
+.library-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #2a2a4a;
+  flex-shrink: 0;
+}
+
+.library-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e0e8f8;
+}
+
+#library-close {
+  background: none;
+  border: none;
+  color: #667;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+#library-close:hover {
+  background: #2a2a4a;
+  color: #aac;
+}
+
+#library-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.library-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.library-item:hover {
+  background: #1e2e4e;
+}
+
+.library-item-title {
+  font-size: 13px;
+  color: #c0c8d8;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-item-url {
+  font-size: 11px;
+  color: #556;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.library-empty {
+  padding: 32px;
+  text-align: center;
+  color: #556;
+  font-size: 13px;
+}
+
+.library-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #2a2a4a;
+  flex-shrink: 0;
+}
+
+.library-footer a {
+  color: #4a80c8;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.library-footer a:hover {
+  text-decoration: underline;
+}

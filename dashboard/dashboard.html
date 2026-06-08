@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <!-- コントロールバー（編集モード時のみ表示） -->
+  <div id="control-bar">
+    <div class="control-left">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="#1a73e8" style="flex-shrink:0">
+        <rect x="0" y="0" width="6" height="6" rx="1"/>
+        <rect x="8" y="0" width="6" height="6" rx="1"/>
+        <rect x="0" y="8" width="6" height="6" rx="1"/>
+        <rect x="8" y="8" width="6" height="6" rx="1"/>
+      </svg>
+      <select id="dashboard-select" title="ダッシュボード切替"></select>
+      <button id="btn-new-dashboard" class="ctrl-btn" title="新しいダッシュボード">＋</button>
+      <button id="btn-rename-dashboard" class="ctrl-btn" title="名前を変更">✎</button>
+      <button id="btn-delete-dashboard" class="ctrl-btn ctrl-btn-danger" title="削除">🗑</button>
+    </div>
+    <div class="control-center">
+      <button id="btn-add-tile" class="ctrl-btn ctrl-btn-primary">＋ タイル追加</button>
+      <button id="btn-add-current-tab" class="ctrl-btn">＋ 現在のタブ</button>
+      <button id="btn-add-from-library" class="ctrl-btn">📚 ライブラリ</button>
+    </div>
+    <div class="control-right">
+      <button id="btn-save" class="ctrl-btn">保存</button>
+      <button id="btn-toggle-mode" class="ctrl-btn ctrl-btn-mode">▶ ダッシュボードモード</button>
+    </div>
+  </div>
+
+  <!-- タイル配置キャンバス -->
+  <div id="canvas">
+    <div id="grid-overlay"></div>
+    <div id="empty-state">
+      <div class="empty-icon">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+          <rect x="2" y="2" width="20" height="20" rx="2" stroke="#555" stroke-width="2"/>
+          <rect x="26" y="2" width="20" height="20" rx="2" stroke="#555" stroke-width="2"/>
+          <rect x="2" y="26" width="20" height="20" rx="2" stroke="#555" stroke-width="2"/>
+          <rect x="26" y="26" width="20" height="20" rx="2" stroke="#555" stroke-width="2"/>
+        </svg>
+      </div>
+      <h2>タイルがありません</h2>
+      <p>「＋ タイル追加」でページを追加してください</p>
+    </div>
+  </div>
+
+  <!-- ダッシュボードモード中のESCヒント -->
+  <div id="shortcut-hint">ESC / F11 で編集モードへ</div>
+
+  <!-- タイル追加モーダル -->
+  <div id="modal-overlay" class="hidden">
+    <div id="modal">
+      <h3 id="modal-title">タイルを追加</h3>
+      <label>URL</label>
+      <input id="modal-url" type="url" placeholder="https://example.com" autocomplete="off">
+      <label>タイトル（省略可）</label>
+      <input id="modal-label" type="text" placeholder="マイページ">
+
+      <div class="tab-picker-divider">
+        <span>開いているタブから選択</span>
+      </div>
+      <div id="tab-list"></div>
+
+      <div class="modal-buttons">
+        <button id="modal-cancel">キャンセル</button>
+        <button id="modal-ok" class="btn-primary">追加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ライブラリモーダル -->
+  <div id="library-overlay" class="hidden">
+    <div id="library-modal">
+      <div class="library-header">
+        <h3>保存済みURL ライブラリ</h3>
+        <button id="library-close">✕</button>
+      </div>
+      <div id="library-list"></div>
+      <div class="library-footer">
+        <a href="#" id="go-to-options">設定ページで管理 →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
